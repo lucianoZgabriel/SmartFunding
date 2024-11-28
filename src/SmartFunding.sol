@@ -9,47 +9,42 @@ error SmartFunding__NotOwner();
 contract SmartFunding {
     using PriceConverter for uint256;
 
-    mapping(address => uint256) public addressToAmountFunded;
-    address[] public funders;
-
-    address public i_owner;
+    mapping(address => uint256) private s_addressToAmountFunded;
+    address[] private s_funders;
+    address private immutable i_owner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
-
-    constructor() {
-        i_owner = msg.sender;
-    }
-
-    function fund() public payable {
-        require(
-            msg.value.getConversionRate() >= MINIMUM_USD,
-            "You need to spend more ETH!"
-        );
-        addressToAmountFunded[msg.sender] += msg.value;
-        funders.push(msg.sender);
-    }
-
-    function getVersion() public view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(
-            0x694AA1769357215DE4FAC081bf1f309aDC325306
-        );
-        return priceFeed.version();
-    }
+    AggregatorV3Interface private s_priceFeed;
 
     modifier onlyOwner() {
         if (msg.sender != i_owner) revert SmartFunding__NotOwner();
         _;
     }
 
+    constructor(address priceFeed) {
+        i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
+    }
+
+    function fund() public payable {
+        require(
+            msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
+            "You need to spend more ETH!"
+        );
+        s_addressToAmountFunded[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
+    }
+
     function withdraw() public onlyOwner {
+        address[] memory funders = s_funders;
         for (
             uint256 funderIndex = 0;
             funderIndex < funders.length;
             funderIndex++
         ) {
             address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+            s_addressToAmountFunded[funder] = 0;
         }
-        funders = new address[](0);
+        s_funders = new address[](0);
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
@@ -62,5 +57,27 @@ contract SmartFunding {
 
     receive() external payable {
         fund();
+    }
+
+    function getVersion() public view returns (uint256) {
+        return s_priceFeed.version();
+    }
+
+    function getFunder(uint256 index) public view returns (address) {
+        return s_funders[index];
+    }
+
+    function getOwner() public view returns (address) {
+        return i_owner;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return s_priceFeed;
+    }
+
+    function getAddressToAmountFunded(
+        address funder
+    ) public view returns (uint256) {
+        return s_addressToAmountFunded[funder];
     }
 }
