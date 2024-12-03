@@ -2,10 +2,8 @@
 
 ## Table of Contents
 
-- [SmartFunding Smart Contract](#smartfunding-smart-contract)
-  - [Table of Contents](#table-of-contents)
   - [About](#about)
-    - [Key Features](#key-features)
+  - [Key Features](#key-features)
   - [Technologies](#technologies)
   - [Project Structure](#project-structure)
   - [Prerequisites](#prerequisites)
