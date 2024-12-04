@@ -2,8 +2,11 @@
 
 ## Table of Contents
 
+- [SmartFunding Smart Contract](#smartfunding-smart-contract)
+  - [Table of Contents](#table-of-contents)
   - [About](#about)
-  - [Key Features](#key-features)
+  - [Interact with the Frontend](#interact-with-the-frontend)
+    - [Key Features](#key-features)
   - [Technologies](#technologies)
   - [Project Structure](#project-structure)
   - [Prerequisites](#prerequisites)
@@ -22,6 +25,10 @@
 ## About
 
 SmartFunding is a smart contract developed in Solidity that implements a decentralized funding system. The contract allows users to send ETH which is converted to USD using Chainlink Oracle to ensure a minimum contribution of $5 USD.
+
+## Interact with the Frontend
+
+You can interact with the already deployed contract on Sepolia network by visiting the [SmartFunding Frontend](https://smart-funding.vercel.app).
 
 ### Key Features
 
